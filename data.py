@@ -1,5 +1,5 @@
 from functions import (
-	get_time_series, get_daily_reports, get_date_list, list_of_states,
+	get_time_series, get_confinement_time_series, get_daily_reports, get_date_list, list_of_states,
 	make_state_labels, make_country_labels, get_states
 	)
 from config import config
@@ -9,6 +9,7 @@ import datetime
 
 confirmed, deaths, recovered, time_series_dates = get_time_series(local=config['LOCAL'])
 daily_report_data, daily_dates = get_daily_reports(local=config['LOCAL'])
+confined_df, confined_dates = get_confinement_time_series(local=config['LOCAL'])
 
 daily_report_data = get_states(daily_report_data)
 time_series_date_list = get_date_list(time_series_dates)
@@ -126,7 +127,7 @@ for country in countries:
             ])
 
 data_df = pd.DataFrame.from_dict(data)
-
+confinement_df = pd.read_csv("./data/df_confinement.tsv", sep='\t')
 
 label_dict = dict(
     confirmed='Total Confirmed Cases',
@@ -170,6 +171,28 @@ def data_by_area(area='US', col='Country/Region', df=None):
 		)
 	return data
 
+def confinement_by_area(country='Sweden', col = 'country', df=None):
+    data = pd.Series(
+        [df.loc[df[col] == country][date].mean() for date in confined_dates]
+    )
+    return data
+
+def make_data_confinement(country='Sweden'):
+    if country == None or country == 'Sweden':
+        df = pd.DataFrame(
+            data={
+                'detected': [confined_df[date].loc[:, 'nb_detected'].mean() for date in time_series_date_list]
+            }, index=confined_dates)
+    else:
+        df = pd.DataFrame(
+        data={
+            # These dictionaries need to include lists, not pd.Series!
+            'detected': confinement_by_area(area=country, df=confined_df).tolist(),
+        }, index=confined_dates)
+    return df
+
+
+
 def make_data_global(country='Global'):
     if country == None or country == 'Global':
         df = pd.DataFrame(
@@ -188,6 +211,9 @@ def make_data_global(country='Global'):
         }, index=time_series_date_list)
     return df
 
+
+
+
 def make_data_state(state='National', limit=28):
     if state == None or state == 'National':
         df = pd.DataFrame(
@@ -204,4 +230,3 @@ def make_data_state(state='National', limit=28):
             'deaths': data_by_area(area=state, df=us_deaths, col='State').tolist()
         }, index=time_series_date_list)
     return df.iloc[limit:,:]
-

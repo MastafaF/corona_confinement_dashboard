@@ -7,5 +7,7 @@ def str2bool(v):
 
 # Read Config Settings from .env file:
 config = {}
-config['LOCAL'] = str2bool(os.getenv('LOCAL'))
-config['DEBUG'] = str2bool(os.getenv('DEBUG'))
+# config['LOCAL'] = str2bool(os.getenv('LOCAL'))
+# config['DEBUG'] = str2bool(os.getenv('DEBUG'))
+config['LOCAL'] = True
+config['DEBUG'] = True

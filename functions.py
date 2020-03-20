@@ -128,6 +128,34 @@ def get_time_series(local=True):
 
 	return confirmed, deaths, recovered, valid_dates
 
+
+
+def get_confinement_time_series(local=True):
+	ts = {}
+	if local == False: # TODO: do like below
+		time_series_files = {
+	    	'Confirmed':'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
+	    	'Deaths': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
+	    	'Recovered': 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv'
+		}
+	else:
+		time_series_files = {
+	    	'confinement':'data/df_confinement.tsv'
+		}
+
+	confinement = pd.read_csv( time_series_files['confinement'], sep = '\t' )
+
+	start_date = pd.to_datetime('01/22/2020')
+	end_date = pd.to_datetime('today')
+	dates = pd.date_range(start_date, end_date)
+	valid_dates = []
+	for date in dates:
+		if date.strftime('%-m/%-d/%y') in confinement.datetime:
+			valid_dates.append(date)
+
+	return confinement, valid_dates
+
+
 def get_daily_reports(local=True):
 	start_date = pd.to_datetime('01/22/2020')
 	end_date = pd.to_datetime('today')

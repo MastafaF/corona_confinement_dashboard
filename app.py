@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+
+Conda env local: env_corona_dash
+
+"""
 import dash
 import plotly as py
 import dash_core_components as dcc
@@ -7,16 +12,16 @@ from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 import pandas as pd
 
-from config import config
+# from config import config
 
-from layouts import global_tab, US_tab, pandemic_tab
+from layouts import global_tab, US_tab, pandemic_tab, confinement_tab
 
 from data import (
     confirmed, deaths, recovered, time_series_dates,
     daily_report_data, daily_dates, time_series_date_list,
     daily_date_list, us_recovered, us_deaths, us_confirmed,
-    dates, date_strings, label_dict, data_df, data_by_area,
-    make_data_global, make_data_state
+    dates, date_strings, label_dict, data_df, confinement_df, data_by_area, confinement_by_area,
+    make_data_global, make_data_state, make_data_confinement
 #    county_recovered, county_deaths, county_confirmed,
 #    state_confirmed, state_recovered, state_deaths
     )
@@ -70,6 +75,11 @@ app.layout = html.Div([
                 label='Analysis',
                 value='tab-3-main',
                 className='custom-tab',
+                selected_className='custom-tab--selected'),
+            dcc.Tab(
+                label='Confinement Respect',
+                value='tab-4-main',
+                className='custom-tab',
                 selected_className='custom-tab--selected')
     ]),
     html.Div(id='tabs-content-main'),
@@ -89,6 +99,8 @@ def render_content(tab):
         return US_tab
     if tab == 'tab-3-main':
         return pandemic_tab
+    if tab == 'tab-4-main':
+        return confinement_tab
 
 # Gather functions for making graphs:
 from model import (
@@ -277,6 +289,7 @@ def update_x_timeseries(hoverData, yaxis_column_name, axis_type):
 #     )
 #     return fig
 
+
 @app.callback(Output('global-daily-graph', 'figure'), [Input('global-dropdown', 'value')])
 def update_global_daily_graph(selected_dropdown_value):
      country = selected_dropdown_value
@@ -295,7 +308,6 @@ def update_global_daily_graph(selected_dropdown_value):
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
         }
     }
-
 @app.callback(Output('global-graph', 'figure'), [Input('global-dropdown', 'value')])
 def update_global_graph(selected_dropdown_value):
     country = selected_dropdown_value
@@ -314,6 +326,55 @@ def update_global_graph(selected_dropdown_value):
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
         }
     }
+
+
+
+
+@app.callback(Output('confinement-daily-graph', 'figure'), [Input('confinement-dropdown', 'value')])
+def update_confinement_daily_graph(selected_dropdown_value):
+     country = selected_dropdown_value
+     df = make_data_confinement(country)
+     print("DATAFRAMEEEEEE ")
+     print(df)
+     # df = df.diff()
+     return {
+        'data': [
+            {'y': df['nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'},
+            {'y': df['nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max'},
+            {'y': df['nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max-Min'},
+        ],
+        'layout': {
+            'title': 'Daily {country} COVID-19 Cases, Last Updated {update}'.format(
+                country=country,
+                update=last_update(country).strftime("%B %d, %Y")), #TODO: update this --> No idea what that is
+            #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
+        }
+    }
+
+# The one on top
+@app.callback(Output('confinement-graph', 'figure'), [Input('confinement-dropdown', 'value')])
+def update_confinement_graph(selected_dropdown_value):
+    country = selected_dropdown_value
+    df = make_data_global(country)
+    return {
+        'data': [
+            {'y': df['recovered'], 'x': df.index, 'type': 'bar', 'name': 'Recovered'},
+            {'y': df['confirmed'], 'x': df.index, 'type': 'bar', 'name': 'Confirmed'},
+            {'y': df['deaths'], 'x': df.index, 'type': 'bar', 'name': 'Deaths'},
+        ],
+        'layout': {
+            'title': '{country} COVID-19 Cases, Last Updated {update}'.format(
+                country=country,
+                update=last_update(country).strftime("%B %d, %Y")),
+            'barmode': 'stack',
+            #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
+        }
+    }
+
+
+
+
+
 
 @app.callback(Output('us-daily-graph', 'figure'), [Input('us-dropdown', 'value')])
 def update_us_daily_graph(state):
@@ -368,5 +429,6 @@ def update_us_graph(state):
 #confirmed[(confirmed['Country/Region'] == 'US') & (confirmed['Province/State'] == 'Nebraska')]
 
 if __name__ == '__main__':
-    app.run_server(debug=config['DEBUG'])
+    # app.run_server(debug=config['DEBUG'])
+    app.run_server(debug=True)
 

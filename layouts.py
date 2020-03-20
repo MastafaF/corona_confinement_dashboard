@@ -117,3 +117,23 @@ US_tab = html.Div(children=[
     html.Div(children=[dcc.Graph(id='us-graph')],style={'width':'80%','margin':'0 auto'}),
     html.Div(children=[dcc.Graph(id='us-daily-graph')],style={'width':'80%','margin':'0 auto'})
 ])
+
+
+
+# @TODO: add our own tab here --> update data.py
+confinement_tab = html.Div(children=[
+    html.H3(children=[
+        'Select a Country'],style={'width':'30%','margin':'0 auto'}),
+    html.Div(children=[
+            dcc.Dropdown(
+                id='confinement-dropdown',
+                options=country_labels,
+                value='Confinement'
+            )],style={'width':'30%', 'margin':'0 auto'}),
+    html.Div(children=[dcc.Graph(id='confinement-daily-graph')],style={'width':'80%','margin':'0 auto'}),
+    html.Div(children=[dcc.Graph(id='confinement-graph')],style={'width':'80%','margin':'0 auto'})
+    # html.Div(
+    # 	children=[dcc.Graph(id='combo-graph')],
+    # 	style={'width':'80%','margin':'0 auto'}
+    # )
+    ])
