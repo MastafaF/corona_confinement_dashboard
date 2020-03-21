@@ -3,7 +3,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_table
 from data import (
-    country_labels, state_labels, time_series_date_list, dates, date_strings
+    country_labels, state_labels, time_series_date_list, dates, date_strings, city_Sweden_labels
     )
 from model import ndays
 import numpy as np
@@ -127,8 +127,8 @@ confinement_tab = html.Div(children=[
     html.Div(children=[
             dcc.Dropdown(
                 id='confinement-dropdown',
-                options=country_labels,
-                value='Confinement'
+                options=city_Sweden_labels,
+                value='Stockholm'
             )],style={'width':'30%', 'margin':'0 auto'}),
     html.Div(children=[dcc.Graph(id='confinement-daily-graph')],style={'width':'80%','margin':'0 auto'}),
     html.Div(children=[dcc.Graph(id='confinement-graph')],style={'width':'80%','margin':'0 auto'})

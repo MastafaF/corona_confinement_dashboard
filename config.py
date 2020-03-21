@@ -9,5 +9,5 @@ def str2bool(v):
 config = {}
 # config['LOCAL'] = str2bool(os.getenv('LOCAL'))
 # config['DEBUG'] = str2bool(os.getenv('DEBUG'))
-config['LOCAL'] = True
+config['LOCAL'] = False
 config['DEBUG'] = True

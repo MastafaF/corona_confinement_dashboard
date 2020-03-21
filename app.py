@@ -332,21 +332,21 @@ def update_global_graph(selected_dropdown_value):
 
 @app.callback(Output('confinement-daily-graph', 'figure'), [Input('confinement-dropdown', 'value')])
 def update_confinement_daily_graph(selected_dropdown_value):
-     country = selected_dropdown_value
-     df = make_data_confinement(country)
+     city = selected_dropdown_value
+     df = make_data_confinement(city)
      print("DATAFRAMEEEEEE ")
      print(df)
      # df = df.diff()
      return {
         'data': [
-            {'y': df['nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'},
-            {'y': df['nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max'},
-            {'y': df['nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max-Min'},
+            {'y': df['mean_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'},
+            {'y': df['max_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max'},
+            {'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
         ],
         'layout': {
-            'title': 'Daily {country} COVID-19 Cases, Last Updated {update}'.format(
-                country=country,
-                update=last_update(country).strftime("%B %d, %Y")), #TODO: update this --> No idea what that is
+            'title': 'Daily {country} Number of People Detected, Last Updated {update}'.format(
+                country=city,
+                update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
         }
     }
@@ -354,7 +354,8 @@ def update_confinement_daily_graph(selected_dropdown_value):
 # The one on top
 @app.callback(Output('confinement-graph', 'figure'), [Input('confinement-dropdown', 'value')])
 def update_confinement_graph(selected_dropdown_value):
-    country = selected_dropdown_value
+    city = selected_dropdown_value
+    country = 'Sweden' # @TODO: for now we only focus on Sweden anyway
     df = make_data_global(country)
     return {
         'data': [
@@ -370,8 +371,6 @@ def update_confinement_graph(selected_dropdown_value):
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
         }
     }
-
-
 
 
 @app.callback(Output('us-daily-graph', 'figure'), [Input('us-dropdown', 'value')])
