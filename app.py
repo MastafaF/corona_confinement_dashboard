@@ -374,8 +374,6 @@ def update_confinement_graph(selected_dropdown_value):
 
 
 
-
-
 @app.callback(Output('us-daily-graph', 'figure'), [Input('us-dropdown', 'value')])
 def update_us_daily_graph(state):
      df = make_data_state(state)
@@ -431,4 +429,3 @@ def update_us_graph(state):
 if __name__ == '__main__':
     # app.run_server(debug=config['DEBUG'])
     app.run_server(debug=True)
-
