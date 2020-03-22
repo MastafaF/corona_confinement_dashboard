@@ -123,7 +123,7 @@ US_tab = html.Div(children=[
 # @TODO: add our own tab here --> update data.py
 confinement_tab = html.Div(children=[
     html.H3(children=[
-        'Select a Country'],style={'width':'30%','margin':'0 auto'}),
+        'Select a City'],style={'width':'30%','margin':'0 auto'}),
     html.Div(children=[
             dcc.Dropdown(
                 id='confinement-dropdown',

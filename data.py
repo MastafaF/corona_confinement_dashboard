@@ -227,7 +227,6 @@ def confinement_by_area(country='Sweden', col = 'country', df=None):
 def make_data_confinement(city = 'Stockholm'):
     if city == None or city == 'Stockholm': # default value is Stockholm
         city = 'Stockholm'
-        # @TODO: ADD OTHER TOWNS IN THE DROPDOWN MENU; for now we only consider Stockholm
         df_all_groups_city = filter_groups(confinement_df_groups, city=city)
         mean_nb_detected = [df_group.nb_detected.mean() for df_group in df_all_groups_city]
         max_nb_detected = [df_group.nb_detected.max() for df_group in df_all_groups_city]

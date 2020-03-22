@@ -56,10 +56,15 @@ app.config.suppress_callback_exceptions = True
 app.layout = html.Div([
     html.H1(children='COVID-19 Dashboard'),
     dcc.Tabs(
-        id="tabs-main", value='tab-1-main', 
+        id="tabs-main", value='tab-4-main',
         parent_className='custom-tabs',
         className='custom-tabs-container',
         children=[
+            dcc.Tab(
+                label='Confinement Respect',
+                value='tab-4-main',
+                className='custom-tab',
+                selected_className='custom-tab--selected'),
             dcc.Tab(
                 label='Global',
                 value='tab-1-main',
@@ -74,11 +79,6 @@ app.layout = html.Div([
             dcc.Tab(
                 label='Analysis',
                 value='tab-3-main',
-                className='custom-tab',
-                selected_className='custom-tab--selected'),
-            dcc.Tab(
-                label='Confinement Respect',
-                value='tab-4-main',
                 className='custom-tab',
                 selected_className='custom-tab--selected')
     ]),
