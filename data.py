@@ -164,8 +164,11 @@ def filter_groups(df_groups, city='Stockholm'):
 # @TODO: change get_confinement_time_series to return the below instead of confined_dates
 # this array should be an array of the exact days of the month, here it will only give us number
 # Like 21 but we have no idea from which month it is ==> @TODO: keep month and year information
-datetime_confinement_arr = np.unique(confinement_df.index.day)
-
+# before
+# datetime_confinement_arr = np.unique(confinement_df.index.day)
+# after -> we want the days with more information in the format DAY-MONTH-YEAR
+datetime_confinement_arr = np.unique(confinement_df.index.strftime('%d-%m-%Y'))
+# print(datetime_confinement_arr)
 
 label_dict = dict(
     confirmed='Total Confirmed Cases',

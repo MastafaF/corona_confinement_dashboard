@@ -21,7 +21,7 @@ from data import (
     daily_report_data, daily_dates, time_series_date_list,
     daily_date_list, us_recovered, us_deaths, us_confirmed,
     dates, date_strings, label_dict, data_df, confinement_df, data_by_area, confinement_by_area,
-    make_data_global, make_data_state, make_data_confinement
+    make_data_global, make_data_state, make_data_confinement, datetime_confinement_arr
 #    county_recovered, county_deaths, county_confirmed,
 #    state_confirmed, state_recovered, state_deaths
     )
@@ -295,11 +295,12 @@ def update_global_daily_graph(selected_dropdown_value):
      country = selected_dropdown_value
      df = make_data_global(country)
      df = df.diff()
+     # before x axis was just df.index
      return {
         'data': [
-            {'y': df['recovered'], 'x': df.index, 'type': 'bar', 'name': 'Recovered'},
-            {'y': df['confirmed'], 'x': df.index, 'type': 'bar', 'name': 'Confirmed'},
-            {'y': df['deaths'], 'x': df.index, 'type': 'bar', 'name': 'Deaths'},
+            {'y': df['recovered'], 'x': datetime_confinement_arr, 'type': 'bar', 'name': 'Recovered'},
+            {'y': df['confirmed'], 'x': datetime_confinement_arr, 'type': 'bar', 'name': 'Confirmed'},
+            {'y': df['deaths'], 'x': datetime_confinement_arr, 'type': 'bar', 'name': 'Deaths'},
         ],
         'layout': {
             'title': 'Daily {country} COVID-19 Cases, Last Updated {update}'.format(
@@ -329,13 +330,13 @@ def update_global_graph(selected_dropdown_value):
 
 
 
-
+# The one on top
 @app.callback(Output('confinement-daily-graph', 'figure'), [Input('confinement-dropdown', 'value')])
 def update_confinement_daily_graph(selected_dropdown_value):
      city = selected_dropdown_value
      df = make_data_confinement(city)
-     print("DATAFRAMEEEEEE ")
-     print(df)
+     # print("DATAFRAMEEEEEE ")
+     # print(df)
      # df = df.diff()
      return {
         'data': [
@@ -348,10 +349,21 @@ def update_confinement_daily_graph(selected_dropdown_value):
                 country=city,
                 update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
+                'barmode':'stack',
+                'bargap':0.9,
+                'height': 350,
+                'margin': dict(
+                    l=50,
+                    r=50,
+                    b=100,
+                    t=50,
+                    pad=4
+                ),
+                'paper_bgcolor': "white",
         }
     }
 
-# The one on top
+
 @app.callback(Output('confinement-graph', 'figure'), [Input('confinement-dropdown', 'value')])
 def update_confinement_graph(selected_dropdown_value):
     city = selected_dropdown_value
@@ -368,7 +380,15 @@ def update_confinement_graph(selected_dropdown_value):
                 country=country,
                 update=last_update(country).strftime("%B %d, %Y")),
             'barmode': 'stack',
-            #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
+            'height': 350,
+            'margin': dict(
+                l=50,
+                r=50,
+                b=100,
+                t=50,
+                pad=4
+            ),
+            'paper_bgcolor': "white",
         }
     }
 
