@@ -9,5 +9,6 @@ We focus now in Sweden but feel free to raise an issue with ideas in your countr
 
 ### STAY SAFE, STAY HOME!
 
-Deployed [here](https://corona-confinement-dashboard.herokuapp.com/)
+Deployed [here](https://corona-confinement.herokuapp.com/)
+
 
