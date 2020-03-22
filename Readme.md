@@ -11,4 +11,6 @@ We focus now in Sweden but feel free to raise an issue with ideas in your countr
 
 Deployed [here](https://corona-confinement.herokuapp.com/)
 
+# Contributors
 
+[![](https://sourcerer.io/fame/clmnt/huggingface/transformers/images/0)](https://github.com/MastafaF)[![](https://sourcerer.io/fame/clmnt/huggingface/transformers/images/1)](https://github.com/quentindubourgdeluzencon)[![](https://sourcerer.io/fame/clmnt/huggingface/transformers/images/2)]
