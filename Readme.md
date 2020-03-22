@@ -1,9 +1,13 @@
-# COVID-19 Dashboard
+# Introduction
 
-This is a simple dashboard to keep me off twitter during the next few weeks. I probably should have picked a more uplifting project, but this one could be useful. 
+This project is inspired by this [project](https://github.com/ecohydro/covid-19-waves)
 
-Main goals are to re-learn muscle memory around plotly's Dash library, generate some informative data visualizations, and provide code for others to modify and use as interested.
+# Our Goals 
+Our main goal is to tell people to say home with key statistics. 
 
-I will try to document things in a series of notebooks, although it's a little hard to demonstrate working code for Dash in a notebook environment.
+We focus now in Sweden but feel free to raise an issue with ideas in your country. 
 
-Deployed [here](https://covid-19-waves.herokuapp.com)
+### STAY SAFE, STAY HOME!
+
+Deployed [here](https://corona-confinement-dashboard.herokuapp.com/)
+
