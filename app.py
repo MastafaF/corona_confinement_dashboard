@@ -11,10 +11,11 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 import pandas as pd
+import datetime
 
 # from config import config
 
-from layouts import global_tab, confinement_tab, confinement_yesterday_tab
+from layouts import global_tab, confinement_tab, confinement_yesterday_tab, analysis_tab
 
 from data import (
     confirmed, deaths, recovered, time_series_dates,
@@ -75,6 +76,11 @@ app.layout = html.Div([
                 value='tab-3-main',
                 className='custom-tab',
                 selected_className='custom-tab--selected'),
+             dcc.Tab(
+                label='Analysis',
+                value='tab-2-main',
+                className='custom-tab',
+                selected_className='custom-tab--selected')
             
     ]),
     html.Div(id='tabs-content-main'),
@@ -106,6 +112,8 @@ def render_content(tab):
         return confinement_tab
     if tab == 'tab-3-main':
         return confinement_yesterday_tab
+    if tab == 'tab-2-main':
+        return analysis_tab
 
 # Gather functions for making graphs:
 from model import (
@@ -424,6 +432,43 @@ def update_confinement_hourly_graph(selected_dropdown_value):
                     pad=4
                 ),
                 'paper_bgcolor': "white",
+        }
+    }
+
+@app.callback(Output('analysis-graph', 'figure'), [Input('analysis-dropdown', 'value')])
+def update_analysis_graph(selected_dropdown_value):
+    city = selected_dropdown_value
+    country = 'Sweden' # @TODO: for now we only focus on Sweden anyway
+    
+    df_confinement = make_data_confinement(city)
+    date_list_confinement = list(df_confinement.index)
+
+    df_cases = make_data_global(country)
+    df_cases = df_cases[df_cases.index.isin(date_list_confinement)]
+    date_list_cases = list(df_cases.index)
+    
+    df_confinement = df_confinement[df_confinement.index.isin(date_list_cases)]
+    print(df_cases.index)
+    print(df_confinement.index)
+    
+    return {
+        'data': [
+            {'Confirmed cases': df_cases['confirmed'], 'Confinement Status': df_confinement['mean_nb_detected'], 'type': 'scatter', 'name': 'Confirmed cases vs Confinement Status'},
+        ],
+        'layout': {
+            'title': '{country} COVID-19 Cases vs Confinement status {update}'.format(
+                country=country,
+                update=last_update(country).strftime("%B %d, %Y")),
+            'barmode': 'stack',
+            'height': 350,
+            'margin': dict(
+                l=50,
+                r=50,
+                b=100,
+                t=50,
+                pad=4
+            ),
+            'paper_bgcolor': "white",
         }
     }
 

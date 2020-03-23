@@ -61,3 +61,19 @@ confinement_yesterday_tab = html.Div(children=[
     # )
     ])
 
+analysis_tab = html.Div(children=[
+    html.H3(children=[
+        'Select a City'],style={'width':'30%','margin':'0 auto'}),
+    html.Div(children=[
+            dcc.Dropdown(
+                id='analysis-dropdown',
+                options=city_Sweden_labels,
+                value='Stockholm'
+            )],style={'width':'30%', 'margin':'0 auto'}),
+    html.Div(children=[dcc.Graph(id='analysis-graph')],style={'width':'80%','margin':'0 auto'}),
+    # html.Div(
+    # 	children=[dcc.Graph(id='combo-graph')],
+    # 	style={'width':'80%','margin':'0 auto'}
+    # )
+    ])
+

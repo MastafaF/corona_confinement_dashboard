@@ -165,7 +165,7 @@ def filter_groups(df_groups, city='Stockholm'):
 # before
 # datetime_confinement_arr = np.unique(confinement_df.index.day)
 # after -> we want the days with more information in the format DAY-MONTH-YEAR
-datetime_confinement_arr = np.unique(confinement_df.index.strftime('%d-%m-%Y'))
+datetime_confinement_arr = np.unique(confinement_df.index.strftime('%-m/%-d/%y'))
 # print(datetime_confinement_arr)
 
 label_dict = dict(
