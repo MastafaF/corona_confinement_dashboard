@@ -13,5 +13,4 @@ Deployed [here](https://corona-confinement.herokuapp.com/)
 
 # Contributors
 
-[![](https://sourcerer.io/fame/clmnt/huggingface/transformers/images/0)](https://github.com/MastafaF)[![](https://github.com/MastafaF/corona_confinement_dashboard/edit/master/ressources/pictures/photobg)](https://github.com/quentindubourgdeluzencon)
-
+<a href="https://github.com/MastafaF" target="_blank"><img src="./ressources/pictures/photo_mastafa.jpg"></a>
