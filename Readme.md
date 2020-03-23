@@ -15,3 +15,4 @@ Deployed [here](https://corona-confinement.herokuapp.com/)
 
 <img src='./ressources/pictures/photo_mastafa.jpeg' href= 'https://github.com/MastafaF' width=100 height=100 style="border-radius:50%"> <img src='./ressources/pictures/photo_quentin.jpg' href = 'https://github.com/quentindubourgdeluzencon)' width=100 height=100 style="border-radius:50%">
 
+  <a href="https://github.com/MastafaF"><img src="./ressources/pictures/photo_mastafa.jpeg" height="auto" width="200" style="border-radius:50%"></a>
