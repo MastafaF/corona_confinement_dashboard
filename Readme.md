@@ -13,5 +13,4 @@ Deployed [here](https://corona-confinement.herokuapp.com/)
 
 # Contributors
 
-<img src='./ressources/pictures/image_pro_linkedin.jpeg' href= 'https://github.com/MastafaF' width=100 height=100>
-<img src='./ressources/pictures/photo_quentin.jpg' href = 'https://github.com/quentindubourgdeluzencon)' width=100 height=100>
+<img src='./ressources/pictures/photo_mastafa.jpeg' href= 'https://github.com/MastafaF' width=100 height=100> <img src='./ressources/pictures/photo_quentin.jpg' href = 'https://github.com/quentindubourgdeluzencon)' width=100 height=100>
