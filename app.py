@@ -11,18 +11,17 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 import pandas as pd
-import datetime
 
 # from config import config
 
-from layouts import global_tab, US_tab, pandemic_tab, confinement_tab
+from layouts import global_tab, confinement_tab, confinement_yesterday_tab
 
 from data import (
     confirmed, deaths, recovered, time_series_dates,
     daily_report_data, daily_dates, time_series_date_list,
-    daily_date_list, us_recovered, us_deaths, us_confirmed,
+    daily_date_list,
     dates, date_strings, label_dict, data_df, confinement_df, data_by_area, confinement_by_area,
-    make_data_global, make_data_state, make_data_confinement, datetime_confinement_arr
+    make_data_global, make_data_confinement, make_data_hourly_confinement, confinement, datetime_confinement_arr
 #    county_recovered, county_deaths, county_confirmed,
 #    state_confirmed, state_recovered, state_deaths
     )
@@ -50,7 +49,7 @@ app = dash.Dash(
     external_scripts=external_scripts,
     external_stylesheets=external_stylesheets)
 
-app.title = 'WAVES Lab COVID-19 Dashboard'
+app.title = 'Sweden confinement - Waves - COVID-19 Dashboard'
 server = app.server
 app.config.suppress_callback_exceptions = True
 
@@ -72,16 +71,11 @@ app.layout = html.Div([
                 className='custom-tab',
                 selected_className='custom-tab--selected'),
             dcc.Tab(
-                label='United States',
-                value='tab-2-main',
-                className='custom-tab',
-                selected_className='custom-tab--selected'
-                ),
-            dcc.Tab(
-                label='Analysis',
+                label='Confinement Yesterday',
                 value='tab-3-main',
                 className='custom-tab',
-                selected_className='custom-tab--selected')
+                selected_className='custom-tab--selected'),
+            
     ]),
     html.Div(id='tabs-content-main'),
     html.Div(children=[
@@ -91,17 +85,27 @@ app.layout = html.Div([
         ],style={'width':'80%','margin':'0 auto'})
 ])
 
+"""dcc.Tab(
+                label='United States',
+                value='tab-2-main',
+                className='custom-tab',
+                selected_className='custom-tab--selected'
+                ),
+            dcc.Tab(
+                label='Analysis',
+                value='tab-3-main',
+                className='custom-tab',
+                selected_className='custom-tab--selected')"""
+
 @app.callback(Output('tabs-content-main', 'children'),
               [Input('tabs-main', 'value')])
 def render_content(tab):
     if tab == 'tab-1-main':
         return global_tab
-    if tab == 'tab-2-main':
-        return US_tab
-    if tab == 'tab-3-main':
-        return pandemic_tab
     if tab == 'tab-4-main':
         return confinement_tab
+    if tab == 'tab-3-main':
+        return confinement_yesterday_tab
 
 # Gather functions for making graphs:
 from model import (
@@ -346,13 +350,9 @@ def update_confinement_daily_graph(selected_dropdown_value):
             {'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
         ],
         'layout': {
-            'title': 'Daily Number of People Detected in key area of {country} , Last Updated {update} at {hour}'.format(
+            'title': 'Daily {country} Number of People Detected, Last Updated: 8 pm, {update}'.format(
                 country=city,
-                update=last_update("Sweden").strftime("%B %d, %Y"),
-                hour = datetime.datetime.now().strftime("%I:%M:%S %p")
-
-            ), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
-
+                update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
                 'barmode':'stack',
                 'bargap':0.9,
@@ -397,58 +397,38 @@ def update_confinement_graph(selected_dropdown_value):
         }
     }
 
-
-@app.callback(Output('us-daily-graph', 'figure'), [Input('us-dropdown', 'value')])
-def update_us_daily_graph(state):
-     df = make_data_state(state)
-     df = df.diff()
+@app.callback(Output('confinement-hourly-graph', 'figure'), [Input('confinement-hourly-dropdown', 'value')])
+def update_confinement_hourly_graph(selected_dropdown_value):
+     city = selected_dropdown_value
+     df = make_data_hourly_confinement(city)
+     # print("DATAFRAMEEEEEE ")
+     # print(df)
+     # df = df.diff()
      return {
         'data': [
-            {'y': df['recovered'], 'x': df.index, 'type': 'bar', 'name': 'Recovered'},
-            {'y': df['confirmed'], 'x': df.index, 'type': 'bar', 'name': 'Confirmed'},
-            {'y': df['deaths'], 'x': df.index, 'type': 'bar', 'name': 'Deaths'},
+            {'y': df['mean_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'},
+            {'y': df['max_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max'},
+            {'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
         ],
         'layout': {
-            'title': 'Daily {state} COVID-19 Cases'.format(
-                state=state),
-            'height':350,
-            'margin':dict(
-            l=50,
-            r=50,
-            b=100,
-            t=50,
-            pad=4
-            ),
-            'paper_bgcolor':"white",
+            'title': 'Daily {country} Number of People Detected by Hours: {update}'.format(
+                country=city,
+                update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
+            #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
+                'barmode':'stack',
+                'bargap':0.9,
+                'height': 350,
+                'margin': dict(
+                    l=50,
+                    r=50,
+                    b=100,
+                    t=50,
+                    pad=4
+                ),
+                'paper_bgcolor': "white",
         }
     }
 
-@app.callback(Output('us-graph', 'figure'), [Input('us-dropdown', 'value')])
-def update_us_graph(state):
-    df = make_data_state(state)
-    return {    
-        'data': [
-            {'y': df['recovered'], 'x': df.index, 'type': 'bar', 'name': 'Recovered'},
-            {'y': df['confirmed'], 'x': df.index, 'type': 'bar', 'name': 'Confirmed'},
-            {'y': df['deaths'], 'x': df.index, 'type': 'bar', 'name': 'Deaths'},
-        ],
-        'layout': {
-            'title': '{state} COVID-19 Cases, Last Updated {update}'.format(
-                state=state,
-                update=last_update(state, column='State').strftime("%B %d, %Y")),
-            'barmode': 'stack',
-            'height':350,
-            'margin':dict(
-            l=50,
-            r=50,
-            b=100,
-            t=50,
-            pad=4
-            ),
-            'paper_bgcolor':"white",
-        }
-    }
-#confirmed[(confirmed['Country/Region'] == 'US') & (confirmed['Province/State'] == 'Nebraska')]
 
 if __name__ == '__main__':
     # app.run_server(debug=config['DEBUG'])

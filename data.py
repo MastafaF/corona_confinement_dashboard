@@ -1,6 +1,5 @@
 from functions import (
-	get_time_series, get_confinement_time_series, get_daily_reports, get_date_list, list_of_states,
-	make_state_labels, make_country_labels, get_states
+	get_time_series, get_confinement_time_series, get_daily_reports, get_date_list, make_country_labels
 	)
 from config import config
 import pandas as pd
@@ -17,7 +16,6 @@ daily_report_data, daily_dates = get_daily_reports(local=config['LOCAL'])
 # print("CONFINEMENT DATRAFRAME")
 # print(confined_df)
 
-daily_report_data = get_states(daily_report_data)
 time_series_date_list = get_date_list(time_series_dates)
 daily_date_list = daily_dates.tolist()
 
@@ -168,6 +166,7 @@ def filter_groups(df_groups, city='Stockholm'):
 # datetime_confinement_arr = np.unique(confinement_df.index.day)
 # after -> we want the days with more information in the format DAY-MONTH-YEAR
 datetime_confinement_arr = np.unique(confinement_df.index.strftime('%d-%m-%Y'))
+datetim_hourly_confinement_arr = df.max(axis = 0).datetime
 # print(datetime_confinement_arr)
 
 label_dict = dict(
@@ -193,16 +192,6 @@ dates = np.array(
 	[datetime.datetime.strptime(date, '%m/%d/%y') for date in data_df.date.unique()])
 date_strings = [date.strftime('%-m/%-d/%y') for date in dates]
 
-
-
-us_confirmed = confirmed[(confirmed['Country/Region'] == 'US')].copy()
-us_confirmed = get_states(us_confirmed)
-us_deaths = deaths[(deaths['Country/Region'] == 'US')].copy()
-us_deaths = get_states(us_deaths)
-us_recovered = recovered[(recovered['Country/Region'] == 'US')].copy()
-us_recovered = get_states(us_recovered)
-
-state_labels = make_state_labels(data=us_confirmed)
 country_labels = make_country_labels(data=confirmed)
 
 
@@ -247,6 +236,29 @@ def make_data_confinement(city = 'Stockholm'):
         std_nb_detected = [df_group.nb_detected.std() for df_group in df_all_groups_city]
         df = pd.DataFrame(
             data={
+                'mean_nb_detected': mean_nb_detected
+            }, index=datetime_confinement_arr)
+    return df
+
+# Creating our dataframe with mean,max,std values of our detected number of people
+def make_data_hourly_confinement(city = 'Stockholm'):
+    if city == None or city == 'Stockholm': # default value is Stockholm
+        city = 'Stockholm'
+        df_all_groups_city = filter_groups(confinement_df_groups, city=city)
+        mean_nb_detected = [df_group.nb_detected.mean() for df_group in df_all_groups_city]
+        df = pd.DataFrame(
+            data={
+                'mean_nb_detected': mean_nb_detected,
+                'max_nb_detected': max_nb_detected,
+                'std_nb_detected': std_nb_detected
+            }, index=datetime_confinement_arr)
+    else:
+        df_all_groups_city = filter_groups(confinement_df_groups, city=city)
+        mean_nb_detected = [df_group.nb_detected.mean() for df_group in df_all_groups_city]
+        max_nb_detected = [df_group.nb_detected.max() for df_group in df_all_groups_city]
+        std_nb_detected = [df_group.nb_detected.std() for df_group in df_all_groups_city]
+        df = pd.DataFrame(
+            data={
                 'mean_nb_detected': mean_nb_detected,
                 'max_nb_detected': max_nb_detected,
                 'std_nb_detected': std_nb_detected
@@ -275,20 +287,3 @@ def make_data_global(country='Global'):
 
 
 
-
-def make_data_state(state='National', limit=28):
-    if state == None or state == 'National':
-        df = pd.DataFrame(
-            data={
-                'confirmed': [us_confirmed[date].sum() for date in time_series_date_list],
-                'deaths': [us_deaths[date].sum() for date in time_series_date_list],
-                'recovered': [us_recovered[date].sum() for date in time_series_date_list]
-            }, index=time_series_date_list)
-    else:
-        df = pd.DataFrame(
-            data={
-            'recovered': data_by_area(area=state, df=us_recovered, col='State').tolist(),
-            'confirmed': data_by_area(area=state, df=us_confirmed, col='State').tolist(),
-            'deaths': data_by_area(area=state, df=us_deaths, col='State').tolist()
-        }, index=time_series_date_list)
-    return df.iloc[limit:,:]
