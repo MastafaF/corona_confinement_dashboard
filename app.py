@@ -11,6 +11,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 import pandas as pd
+import datetime
 
 # from config import config
 
@@ -345,9 +346,13 @@ def update_confinement_daily_graph(selected_dropdown_value):
             {'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
         ],
         'layout': {
-            'title': 'Daily Number of People Detected in key area of {country} , Last Updated {update}'.format(
+            'title': 'Daily Number of People Detected in key area of {country} , Last Updated {update} at {hour}'.format(
                 country=city,
-                update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
+                update=last_update("Sweden").strftime("%B %d, %Y"),
+                hour = datetime.datetime.now().strftime("%I:%M:%S %p")
+
+            ), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
+
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
                 'barmode':'stack',
                 'bargap':0.9,
