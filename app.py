@@ -21,7 +21,7 @@ from data import (
     daily_report_data, daily_dates, time_series_date_list,
     daily_date_list,
     dates, date_strings, label_dict, data_df, confinement_df, data_by_area, confinement_by_area,
-    make_data_global, make_data_confinement, make_data_hourly_confinement, confinement, datetime_confinement_arr
+    make_data_global, make_data_confinement, make_data_hourly_confinement, datetime_confinement_arr
 #    county_recovered, county_deaths, county_confirmed,
 #    state_confirmed, state_recovered, state_deaths
     )
@@ -406,12 +406,10 @@ def update_confinement_hourly_graph(selected_dropdown_value):
      # df = df.diff()
      return {
         'data': [
-            {'y': df['mean_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'},
-            {'y': df['max_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max'},
-            {'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
+            {'y': df['mean_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'}
         ],
         'layout': {
-            'title': 'Daily {country} Number of People Detected by Hours: {update}'.format(
+            'title': 'Daily {country} Number of People (mean) Detected by Hours: {update}'.format(
                 country=city,
                 update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
             #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}

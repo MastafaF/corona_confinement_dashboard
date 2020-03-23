@@ -166,7 +166,6 @@ def filter_groups(df_groups, city='Stockholm'):
 # datetime_confinement_arr = np.unique(confinement_df.index.day)
 # after -> we want the days with more information in the format DAY-MONTH-YEAR
 datetime_confinement_arr = np.unique(confinement_df.index.strftime('%d-%m-%Y'))
-datetim_hourly_confinement_arr = df.max(axis = 0).datetime
 # print(datetime_confinement_arr)
 
 label_dict = dict(
@@ -236,33 +235,61 @@ def make_data_confinement(city = 'Stockholm'):
         std_nb_detected = [df_group.nb_detected.std() for df_group in df_all_groups_city]
         df = pd.DataFrame(
             data={
-                'mean_nb_detected': mean_nb_detected
+                'mean_nb_detected': mean_nb_detected,
+                'max_nb_detected': max_nb_detected,
+                'std_nb_detected': std_nb_detected
             }, index=datetime_confinement_arr)
     return df
 
 # Creating our dataframe with mean,max,std values of our detected number of people
 def make_data_hourly_confinement(city = 'Stockholm'):
+    def get_hour(str_datetime):
+        """
+        From a string time in our dataframe, we want an object datetime
+        :param str_datetime:
+        :return: hour
+        """
+        return(datetime.datetime.strptime(str_datetime, "%d-%m-%Y_%I-%M-%S_%p").hour)
+
+    def get_date(str_datetime):
+        """
+        From a string time in our dataframe, we want an object datetime
+        :param str_datetime:
+        :return: day-month-year
+        """
+        return(datetime.datetime.strptime(str_datetime[:10], "%d-%m-%Y"))
+
+    def get_hourly_data(df, city):
+        # get date of observation
+        date_of_study = get_date(df.max(axis = 0).datetime)
+        
+        # create a column with date
+        df['datetime_parsed'] = df['datetime'].apply(get_date)
+        # filter city
+        df = df.where(df.city == city)
+        # filter day
+        df = df[df.datetime_parsed == date_of_study]
+        #create a column with hours
+        df['datetime_hour'] = df['datetime'].apply(get_hour)
+        #group by hours and apply mean
+        hourly_data = df.groupby([df.datetime_hour]).mean()
+        return hourly_data.nb_detected.as_matrix(), hourly_data.index.map(lambda x : int(x))
+    
+    confinement_hourly_df = pd.read_csv("./data/df_confinement.tsv", sep='\t')
+
     if city == None or city == 'Stockholm': # default value is Stockholm
         city = 'Stockholm'
-        df_all_groups_city = filter_groups(confinement_df_groups, city=city)
-        mean_nb_detected = [df_group.nb_detected.mean() for df_group in df_all_groups_city]
+        mean_nb_detected, hour_confinement_arr = get_hourly_data(confinement_hourly_df, 'Stockholm')
         df = pd.DataFrame(
             data={
-                'mean_nb_detected': mean_nb_detected,
-                'max_nb_detected': max_nb_detected,
-                'std_nb_detected': std_nb_detected
-            }, index=datetime_confinement_arr)
+                'mean_nb_detected': mean_nb_detected
+            }, index=hour_confinement_arr)
     else:
-        df_all_groups_city = filter_groups(confinement_df_groups, city=city)
-        mean_nb_detected = [df_group.nb_detected.mean() for df_group in df_all_groups_city]
-        max_nb_detected = [df_group.nb_detected.max() for df_group in df_all_groups_city]
-        std_nb_detected = [df_group.nb_detected.std() for df_group in df_all_groups_city]
+        mean_nb_detected, hour_confinement_arr = get_hourly_data(confinement_hourly_df, city)
         df = pd.DataFrame(
             data={
-                'mean_nb_detected': mean_nb_detected,
-                'max_nb_detected': max_nb_detected,
-                'std_nb_detected': std_nb_detected
-            }, index=datetime_confinement_arr)
+                'mean_nb_detected': mean_nb_detected
+            }, index=hour_confinement_arr)
     return df
 
 
