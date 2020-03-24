@@ -55,7 +55,7 @@ server = app.server
 app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div([
-    html.H1(children='COVID-19 Dashboard'),
+    html.H1(children='COVID-19 Confinement Dashboard'),
     dcc.Tabs(
         id="tabs-main", value='tab-4-main',
         parent_className='custom-tabs',
