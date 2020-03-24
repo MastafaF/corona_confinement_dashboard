@@ -46,7 +46,7 @@ def last_update(area='US', column='Country/Region'):
 	return most_recent
 
 
-def last_update_confinement(area='US', column='nb_detected'):
+def last_update_confinement(area='Sweden', column='nb_detected'):
     """
     @TODO: update that
     :param area:

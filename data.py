@@ -273,24 +273,24 @@ def make_data_hourly_confinement(city = 'Stockholm'):
         df['datetime_hour'] = df['datetime'].apply(get_hour)
         #group by hours and apply mean
         hourly_data = df.groupby([df.datetime_hour]).mean()
-        return hourly_data.nb_detected.as_matrix(), hourly_data.index.map(lambda x : int(x))
+        return hourly_data.nb_detected.values, hourly_data.index.map(lambda x : int(x)), date_of_study
     
     confinement_hourly_df = pd.read_csv("./data/df_confinement.tsv", sep='\t')
 
     if city == None or city == 'Stockholm': # default value is Stockholm
         city = 'Stockholm'
-        mean_nb_detected, hour_confinement_arr = get_hourly_data(confinement_hourly_df, 'Stockholm')
+        mean_nb_detected, hour_confinement_arr, date_of_study = get_hourly_data(confinement_hourly_df, 'Stockholm')
         df = pd.DataFrame(
             data={
                 'mean_nb_detected': mean_nb_detected
             }, index=hour_confinement_arr)
     else:
-        mean_nb_detected, hour_confinement_arr = get_hourly_data(confinement_hourly_df, city)
+        mean_nb_detected, hour_confinement_arr, date_of_study= get_hourly_data(confinement_hourly_df, city)
         df = pd.DataFrame(
             data={
                 'mean_nb_detected': mean_nb_detected
             }, index=hour_confinement_arr)
-    return df
+    return df, date_of_study
 
 
 

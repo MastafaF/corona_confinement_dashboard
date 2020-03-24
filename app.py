@@ -408,10 +408,8 @@ def update_confinement_graph(selected_dropdown_value):
 @app.callback(Output('confinement-hourly-graph', 'figure'), [Input('confinement-hourly-dropdown', 'value')])
 def update_confinement_hourly_graph(selected_dropdown_value):
      city = selected_dropdown_value
-     df = make_data_hourly_confinement(city)
-     # print("DATAFRAMEEEEEE ")
-     # print(df)
-     # df = df.diff()
+     df , day = make_data_hourly_confinement(city)
+
      return {
         'data': [
             {'y': df['mean_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'}
@@ -419,8 +417,7 @@ def update_confinement_hourly_graph(selected_dropdown_value):
         'layout': {
             'title': 'Daily {country} Number of People (mean) Detected by Hours: {update}'.format(
                 country=city,
-                update=last_update("Sweden").strftime("%B %d, %Y")), #TODO: update this --> It's just a way to know what is the last info we have from datetime -> not essential for us
-            #'margin':{'l': 40, 'b': 40, 't': 10, 'r': 10}
+                update=str(day.day) + '/' + str(day.month) + '/' + str(day.year)),
                 'barmode':'stack',
                 'bargap':0.9,
                 'height': 350,
@@ -448,17 +445,31 @@ def update_analysis_graph(selected_dropdown_value):
     date_list_cases = list(df_cases.index)
     
     df_confinement = df_confinement[df_confinement.index.isin(date_list_cases)]
-    print(df_cases.index)
-    print(df_confinement.index)
-    
+    print(df_cases['confirmed'])
+    print(df_confinement['mean_nb_detected'])
+    print(date_list_cases)
     return {
         'data': [
-            {'Confirmed cases': df_cases['confirmed'], 'Confinement Status': df_confinement['mean_nb_detected'], 'type': 'scatter', 'name': 'Confirmed cases vs Confinement Status'},
+            {'x': df_cases['confirmed'], 
+             'y': df_confinement['mean_nb_detected'],
+             'name': 'Confirmed cases vs Confinement Status', 
+             'text' : date_list_cases,
+             'mode':'lines+markers',
+             'opacity':0.5,
+             'marker':{
+                        'size': 15,
+                        'line': {'width': 0.5, 'color': 'white'},
+                        'color': 'red'
+                    }
+            }
+            
         ],
         'layout': {
-            'title': '{country} COVID-19 Cases vs Confinement status {update}'.format(
+            'title': '{country} COVID-19 Cases vs Confinement Status, last update :{update}'.format(
                 country=country,
-                update=last_update(country).strftime("%B %d, %Y")),
+                update=date_list_cases[-1]),
+            'xaxis':{'title': 'COVID-19 confirmed cases'},
+            'yaxis':{'title': 'People detected outside'},
             'barmode': 'stack',
             'height': 350,
             'margin': dict(
@@ -466,8 +477,9 @@ def update_analysis_graph(selected_dropdown_value):
                 r=50,
                 b=100,
                 t=50,
-                pad=4
+                pad=4,
             ),
+            'hovermode' : 'closest',
             'paper_bgcolor': "white",
         }
     }
