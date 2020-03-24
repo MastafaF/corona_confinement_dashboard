@@ -22,13 +22,13 @@ from data import (
     daily_report_data, daily_dates, time_series_date_list,
     daily_date_list,
     dates, date_strings, label_dict, data_df, confinement_df, data_by_area, confinement_by_area,
-    make_data_global, make_data_confinement, make_data_hourly_confinement, datetime_confinement_arr
+    make_data_global, make_data_confinement, make_data_hourly_confinement, datetime_confinement_arr,compute_correlation
 #    county_recovered, county_deaths, county_confirmed,
 #    state_confirmed, state_recovered, state_deaths
     )
 
 
-githublink = 'https://github.com/ecohydro/covid-19-waves'
+githublink = 'https://github.com/MastafaF/corona_confinement_dashboard/'
 sourceurl = 'https://github.com/CSSEGISandData/COVID-19'
 
 external_stylesheets = [
@@ -445,9 +445,9 @@ def update_analysis_graph(selected_dropdown_value):
     date_list_cases = list(df_cases.index)
     
     df_confinement = df_confinement[df_confinement.index.isin(date_list_cases)]
-    print(df_cases['confirmed'])
-    print(df_confinement['mean_nb_detected'])
-    print(date_list_cases)
+
+    correlation = compute_correlation(df_confinement['mean_nb_detected'],df_cases['confirmed'])
+    
     return {
         'data': [
             {'x': df_cases['confirmed'], 
@@ -484,6 +484,28 @@ def update_analysis_graph(selected_dropdown_value):
         }
     }
 
+@app.callback(Output('correlation', 'children'), [Input('analysis-dropdown', 'value')])
+def update_analysis_graph(selected_dropdown_value):
+    city = selected_dropdown_value
+    country = 'Sweden' # @TODO: for now we only focus on Sweden anyway
+    
+    df_confinement = make_data_confinement(city)
+    date_list_confinement = list(df_confinement.index)
+
+    df_cases = make_data_global(country)
+    df_cases = df_cases[df_cases.index.isin(date_list_confinement)]
+    date_list_cases = list(df_cases.index)
+    
+    df_confinement = df_confinement[df_confinement.index.isin(date_list_cases)]
+
+    correlation = compute_correlation(df_confinement['mean_nb_detected'],df_cases['confirmed'])
+    
+    return '''
+    ### Spearman Correlation : {:.2f} 
+    This factor assesses how well the relationship between two variables can be described using a monotonic function. 
+    The closest it is from 1, the more data are correlated.
+    [More info](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient) 
+    '''.format(correlation)
 
 if __name__ == '__main__':
     # app.run_server(debug=config['DEBUG'])

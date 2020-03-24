@@ -5,6 +5,7 @@ from config import config
 import pandas as pd
 import numpy as np
 import datetime
+from scipy import stats
 
 ##### Drowdown values to be selected ########
 city_Sweden_arr = ['Stockholm', 'Goteborg']
@@ -312,5 +313,15 @@ def make_data_global(country='Global'):
         }, index=time_series_date_list)
     return df
 
+def compute_correlation(df_nb_detected, df_nb_cases):
+    """
+    Computes the Spearman Rank Correlation factor between the column df_nb_detected and df_nb_cases
+    :param df_nb_detected: df['nb_detected'] = pd.Series
+    :param df_nb_cases: df['nb_cases'] = pd.Series
+    :return: float = Spearman Rank Correlation 
+    """
+    # res = (spearman_rank, p_value_are_the_random_variables_correlated)
+    res = stats.spearmanr(list(df_nb_detected), list(df_nb_cases))
+    return res[0]
 
 
