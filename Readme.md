@@ -13,7 +13,7 @@ We focus now in Sweden but feel free to raise an issue with ideas in your countr
 Remember: 
 ### STAY SAFE, STAY HOME!
 
-Deployed [here](https://corona-confinement.herokuapp.com/)
+Please visit our [website](https://corona-confinement.herokuapp.com/) and give a feedback by raising an issue. 
 
 # Contributors
 
