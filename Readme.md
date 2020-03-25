@@ -1,7 +1,8 @@
 # Introduction
 
-This project is inspired by this [work](https://github.com/ecohydro/covid-19-waves)
-We currently detect the number of people that appear outside in key areas of Stockholm and Goteborg at the same time. 
+This project is inspired by this [work](https://github.com/ecohydro/covid-19-waves).  
+
+We currently detect the number of people that appear outside in key areas of Stockholm and Goteborg at the same time.   
 The more people are next to each other in the same space, the more likely Covid-19 will spread across the Swedish population. 
 
 # Our Goals 
