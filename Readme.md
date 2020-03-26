@@ -17,4 +17,4 @@ Please visit our [website](https://corona-confinement.herokuapp.com/) and give a
 
 # Contributors
 
-<img src='./ressources/pictures/photo_mastafa.jpeg' href= 'https://github.com/MastafaF' width=100 height=100 style="border-radius:50%"> <img src='./ressources/pictures/photo_quentin.jpeg' href = 'https://github.com/quentindubourgdeluzencon)' width=100 height=100 style="border-radius:50%">
+<img src='./ressources/pictures/photo_mastafa.jpeg' href= 'https://github.com/MastafaF' width=100 height=100 style="border-radius:50%"> <img src='./ressources/pictures/photo_quentin.jpeg' href = 'https://github.com/quentindubourgdeluzencon' width=100 height=100 style="border-radius:50%">
