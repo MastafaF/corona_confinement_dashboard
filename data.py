@@ -1,5 +1,6 @@
 from functions import (
-	get_time_series, get_confinement_time_series, get_daily_reports, get_date_list, make_country_labels
+	get_time_series, get_time_series_new, get_daily_reports, get_date_list
+	, make_country_labels, get_county_reports
 	)
 from config import config
 import pandas as pd
@@ -7,15 +8,19 @@ import numpy as np
 import datetime
 from scipy import stats
 
+
 ##### Drowdown values to be selected ########
 city_Sweden_arr = ['Stockholm', 'Goteborg']
 city_Sweden_labels = [{'label': city, 'value': city} for city in city_Sweden_arr]
-###################################
-confirmed, deaths, recovered, time_series_dates = get_time_series(local=config['LOCAL'])
+
+confirmed, deaths, time_series_dates = get_time_series_new(local=config['LOCAL'])
 daily_report_data, daily_dates = get_daily_reports(local=config['LOCAL'])
 # confined_df, confined_dates = get_confinement_time_series(local=config['LOCAL'])
 # print("CONFINEMENT DATRAFRAME")
 # print(confined_df)
+
+county_data, county_dates = get_county_reports()
+
 
 time_series_date_list = get_date_list(time_series_dates)
 daily_date_list = daily_dates.tolist()
@@ -24,14 +29,14 @@ from model import doubling_time, growth_rate
 
 confirmed_totals = confirmed.groupby('Country/Region').sum()
 death_totals = deaths.groupby('Country/Region').sum()
-recovered_totals = recovered.groupby('Country/Region').sum()
-	
+# recovered_totals = recovered.groupby('Country/Region').sum()
+
 new_confirmed = confirmed_totals[confirmed_totals.columns[2:]].diff(axis=1)
-new_recovered = recovered_totals[recovered_totals.columns[2:]].diff(axis=1)
+# new_recovered = recovered_totals[recovered_totals.columns[2:]].diff(axis=1)
 new_deaths = death_totals[death_totals.columns[2:]].diff(axis=1)
 
 case_mortality = death_totals/confirmed_totals
-case_recovery = recovered_totals/confirmed_totals
+# case_recovery = recovered_totals/confirmed_totals
 
 countries = confirmed_totals.index
 
@@ -59,13 +64,13 @@ for country in countries:
                 variable='deaths',
                 value=death_totals.loc[country, date]
             ),
-            dict(
-                country=country,
-                state='Nation',
-                date=date,
-                variable='recovered',
-                value=recovered_totals.loc[country, date]
-            ),
+            # dict(
+            #     country=country,
+            #     state='Nation',
+            #     date=date,
+            #     variable='recovered',
+            #     value=recovered_totals.loc[country, date]
+            # ),
             dict(
                 country=country,
                 state='Nation',
@@ -80,13 +85,13 @@ for country in countries:
                 variable='new_deaths',
                 value=new_deaths.loc[country, date]
             ),
-            dict(
-                country=country,
-                state='Nation',
-                date=date,
-                variable='new_recovered',
-                value=new_recovered.loc[country, date]
-            ),
+            # dict(
+            #     country=country,
+            #     state='Nation',
+            #     date=date,
+            #     variable='new_recovered',
+            #     value=new_recovered.loc[country, date]
+            # ),
             dict(
                 country=country,
                 state='Nation',
@@ -108,13 +113,13 @@ for country in countries:
                 variable='case_mortality',
                 value=case_mortality.loc[country, date]
             ),
-            dict(
-                country=country,
-                state='Nation',
-                date=date,
-                variable='case_recovery',
-                value=case_recovery.loc[country, date]
-            ),
+            # dict(
+            #     country=country,
+            #     state='Nation',
+            #     date=date,
+            #     variable='case_recovery',
+            #     value=case_recovery.loc[country, date]
+            # ),
             dict(
                 country=country,
                 state='Nation',
@@ -172,14 +177,14 @@ datetime_confinement_arr = np.unique(confinement_df.index.strftime('%-m/%-d/%y')
 label_dict = dict(
     confirmed='Total Confirmed Cases',
     deaths='Total Deaths',
-    recovered='Total Recovered Cases',
+    # recovered='Total Recovered Cases',
     new_confirmed='New Confirmed Cases',
     new_deaths='New Deaths',
-    new_recovered='New Recovered Cases',
+    # new_recovered='New Recovered Cases',
     case_rate='Percent Increase in Confirmed Cases',
     death_rate='Percent Increase in Deaths',
     case_mortality='Cumulative Case Mortality Rate',
-    case_recovery='Cumulative Case Recovery Rate',
+    # case_recovery='Cumulative Case Recovery Rate',
     case_doubling='Doubling Time for Confirmed Cases',
     death_doubling='Doubling Time of Deaths'
 )
@@ -194,14 +199,8 @@ date_strings = [date.strftime('%-m/%-d/%y') for date in dates]
 
 country_labels = make_country_labels(data=confirmed)
 
+old_confirmed, old_deaths, old_recovered, time_series_dates = get_time_series(local=config['LOCAL'])
 
-def data_by_area(area='US', col='Country/Region', df=None):
-    data =pd.Series(
-        [df.loc[(df[col] == area)][date].sum() for date in time_series_date_list]
-        )
-    print("DATA BY AREA ORIGINAL")
-    print(data)
-    return data
 
 print("TIME SERIES DATE LIST ORIGINAL")
 print(time_series_date_list)
@@ -263,7 +262,7 @@ def make_data_hourly_confinement(city = 'Stockholm'):
     def get_hourly_data(df, city):
         # get date of observation
         date_of_study = get_date(df.max(axis = 0).datetime)
-        
+
         # create a column with date
         df['datetime_parsed'] = df['datetime'].apply(get_date)
         # filter city
@@ -275,7 +274,7 @@ def make_data_hourly_confinement(city = 'Stockholm'):
         #group by hours and apply mean
         hourly_data = df.groupby([df.datetime_hour]).mean()
         return hourly_data.nb_detected.values, hourly_data.index.map(lambda x : int(x)), date_of_study
-    
+
     confinement_hourly_df = pd.read_csv("./data/df_confinement.tsv", sep='\t')
 
     if city == None or city == 'Stockholm': # default value is Stockholm
@@ -295,33 +294,55 @@ def make_data_hourly_confinement(city = 'Stockholm'):
 
 
 
+def data_by_area(area='US', col='Country/Region', df=None):
+	data =pd.Series(
+		[df.loc[(df[col] == area)][date].sum() for date in time_series_date_list],
+		)
+	return data
+
 def make_data_global(country='Global'):
     if country == None or country == 'Global':
         df = pd.DataFrame(
             data={
                 'confirmed': [confirmed[date].sum() for date in time_series_date_list],
                 'deaths': [deaths[date].sum() for date in time_series_date_list],
-                'recovered': [recovered[date].sum() for date in time_series_date_list]
+                # 'recovered': [recovered[date].sum() for date in time_series_date_list]
             }, index=time_series_date_list)
     else:
         df = pd.DataFrame(
         data={
             # These dictionaries need to include lists, not pd.Series!
-            'recovered': data_by_area(area=country, df=recovered).tolist(),
+            # 'recovered': data_by_area(area=country, df=recovered).tolist(),
             'confirmed': data_by_area(area=country, df=confirmed).tolist(),
             'deaths': data_by_area(area=country, df=deaths).tolist()
         }, index=time_series_date_list)
     return df
 
+def make_data_state(state='National', limit=28):
+    if state == None or state == 'National':
+        df = pd.DataFrame(
+            data={
+                'confirmed': [us_confirmed[date].sum() for date in time_series_date_list],
+                'deaths': [us_deaths[date].sum() for date in time_series_date_list],
+                # 'recovered': [us_recovered[date].sum() for date in time_series_date_list]
+            }, index=time_series_date_list)
+    else:
+        df = pd.DataFrame(
+            data={
+            # 'recovered': data_by_area(area=state, df=us_recovered, col='State').tolist(),
+            'confirmed': [us_confirmed[us_confirmed.index == state][date].values[0] for date in time_series_date_list],
+            'deaths': [us_deaths[us_deaths.index == state][date].values[0] for date in time_series_date_list]
+        }, index=time_series_date_list)
+    return df.iloc[limit:,:]
+
+	
 def compute_correlation(df_nb_detected, df_nb_cases):
     """
     Computes the Spearman Rank Correlation factor between the column df_nb_detected and df_nb_cases
     :param df_nb_detected: df['nb_detected'] = pd.Series
     :param df_nb_cases: df['nb_cases'] = pd.Series
-    :return: float = Spearman Rank Correlation 
+    :return: float = Spearman Rank Correlation
     """
     # res = (spearman_rank, p_value_are_the_random_variables_correlated)
     res = stats.spearmanr(list(df_nb_detected), list(df_nb_cases))
     return res[0]
-
-
