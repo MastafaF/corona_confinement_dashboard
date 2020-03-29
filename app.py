@@ -357,7 +357,7 @@ def update_confinement_daily_graph(selected_dropdown_value):
         'data': [
             {'y': df['mean_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Mean'},
             {'y': df['max_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Max'},
-            {'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
+            #{'y': df['std_nb_detected'], 'x': df.index, 'type': 'bar', 'name': 'Number detected Std'},
         ],
         'layout': {
             'title': 'Daily {country} Number of People Detected, Last Updated: 8 pm, {update}'.format(

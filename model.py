@@ -1,7 +1,7 @@
 # Functions to extract growth parameters
 import pandas as pd
 from data import (
-	daily_report_data, 
+	daily_report_data,
 	time_series_date_list
 )
 
@@ -37,12 +37,7 @@ def doubling_time(rates):
 
 def last_update(area='US', column='Country/Region'):
 	from data import daily_report_data
-	if area == 'Global':
-		most_recent = daily_report_data['Last Update'].max().to_pydatetime()
-	elif area == 'National':
-		most_recent = daily_report_data.groupby('Country/Region')['Last Update'].max()['US'].to_pydatetime()
-	else:
-		most_recent = daily_report_data.groupby(column)['Last Update'].max()[area].to_pydatetime()
+	most_recent = daily_report_data['Last Update'].max().to_pydatetime()
 	return most_recent
 
 
@@ -55,6 +50,3 @@ def last_update_confinement(area='Sweden', column='nb_detected'):
     """
     data = pd.read_csv('./data/df_confinement.tsv', sep='\t')
     return data
-
-
-
