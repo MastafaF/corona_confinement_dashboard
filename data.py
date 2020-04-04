@@ -139,7 +139,7 @@ for country in countries:
 data_df = pd.DataFrame.from_dict(data)
 
 # Adding our dataset
-confinement_df = pd.read_csv("./data/df_confinement.tsv", sep='\t')
+confinement_df = pd.read_csv("./data/df_confinement.tsv", sep='\t', error_bad_lines=False)
 def get_datetime(str_datetime):
     """
     From a string time in our dataframe, we want an object datetime
@@ -275,7 +275,7 @@ def make_data_hourly_confinement(city = 'Stockholm'):
         hourly_data = df.groupby([df.datetime_hour]).mean()
         return hourly_data.nb_detected.values, hourly_data.index.map(lambda x : int(x)), date_of_study
 
-    confinement_hourly_df = pd.read_csv("./data/df_confinement.tsv", sep='\t')
+    confinement_hourly_df = pd.read_csv("./data/df_confinement.tsv", sep='\t', error_bad_lines=False)
 
     if city == None or city == 'Stockholm': # default value is Stockholm
         city = 'Stockholm'
@@ -335,7 +335,7 @@ def make_data_state(state='National', limit=28):
         }, index=time_series_date_list)
     return df.iloc[limit:,:]
 
-	
+
 def compute_correlation(df_nb_detected, df_nb_cases):
     """
     Computes the Spearman Rank Correlation factor between the column df_nb_detected and df_nb_cases
